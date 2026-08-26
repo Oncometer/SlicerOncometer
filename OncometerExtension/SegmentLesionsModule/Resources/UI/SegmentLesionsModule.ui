@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SegmentLesionsModule</class>
+ <widget class="qMRMLWidget" name="SegmentLesionsModule">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>654</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="ctkCollapsibleButton" name="inputsCollapsibleButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Inputs</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>PT</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="qMRMLNodeComboBox" name="inputSelector">
+        <property name="toolTip">
+         <string>Select the PET scan to segment.</string>
+        </property>
+        <property name="nodeTypes">
+         <stringlist notr="true">
+          <string>vtkMRMLScalarVolumeNode</string>
+         </stringlist>
+        </property>
+        <property name="showChildNodeTypes">
+         <bool>false</bool>
+        </property>
+        <property name="addEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="removeEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="SlicerParameterName" stdset="0">
+         <string>inputVolume</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="ctkCollapsibleButton" name="modelCollapsibleButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Segmentation model</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_5">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Model:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <layout class="QHBoxLayout" name="modeHelpHorizontalLayout">
+        <item>
+         <widget class="QComboBox" name="modeComboBox">
+          <property name="toolTip">
+           <string>Choose the model.</string>
+          </property>
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="currentText">
+           <string>LION</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>LION</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Custom nnUNet</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="modeHelpToolButton">
+          <property name="toolTip">
+           <string>Help about different models</string>
+          </property>
+          <property name="text">
+           <string>?</string>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QStackedWidget" name="stackedModeWidget">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="pageSimple">
+         <layout class="QFormLayout" name="pageSimpleFormLayout">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          </property>
+          <property name="horizontalSpacing">
+           <number>10</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>6</number>
+          </property>
+          <item row="1" column="0">
+             <widget class="QLabel" name="tracerLabel">
+              <property name="text">
+               <string>Tracer:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="tracerComboBox">
+              <property name="toolTip">
+               <string>Select the PET tracer used for this scan.</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>FDG</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>PSMA</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="pageAvance">
+         <widget class="QLabel" name="label_7">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>63</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Dataset ID:</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="datasetIdSpinBox">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>10</y>
+            <width>209</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Dataset ID of the custom nnUNetv2 model.</string>
+          </property>
+          <property name="maximum">
+           <number>99999</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="SlicerParameterName" stdset="0">
+           <string>datasetId</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_8">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>40</y>
+            <width>81</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Configuration:</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="configurationComboBox">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>40</y>
+            <width>209</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>nnUNetv2 configuration to run.</string>
+          </property>
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="currentText">
+           <string>3d_fullres</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>3d_fullres</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2d</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3d_lowres</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3d_cascade_fullres</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="label_9">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>43</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Trainer:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="trainerLineEdit">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>70</y>
+            <width>209</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Trainer used during training.</string>
+          </property>
+          <property name="text">
+           <string>nnUNetTrainer</string>
+          </property>
+          <property name="SlicerParameterName" stdset="0">
+           <string>trainer</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="plansIdentifierLineEdit">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>100</y>
+            <width>209</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Usually nnUNetPlans unless you trained a custom planner.</string>
+          </property>
+          <property name="text">
+           <string>nnUNetPlans</string>
+          </property>
+          <property name="SlicerParameterName" stdset="0">
+           <string>plansIdentifier</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_10">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>100</y>
+            <width>88</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Plans identifier:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="checkpointNameLineEdit">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>130</y>
+            <width>209</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Checkpoint file name, typically checkpoint_final.pth.</string>
+          </property>
+          <property name="text">
+           <string>checkpoint_final.pth</string>
+          </property>
+          <property name="SlicerParameterName" stdset="0">
+           <string>checkpointName</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_11">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>67</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Checkpoint:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_12">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>160</y>
+            <width>33</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Folds:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="foldsLineEdit">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>160</y>
+            <width>209</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Comma-separated folds, for example 0,1,2,3,4 or all.</string>
+          </property>
+          <property name="text">
+           <string>0,1,2,3,4</string>
+          </property>
+          <property name="SlicerParameterName" stdset="0">
+           <string>folds</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="labelResultsFolder">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>190</y>
+            <width>141</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Path to root of 'nnUNet_results':</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="resultsFolderLineEdit">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>190</y>
+            <width>149</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Path to root of 'nnUNet_results' to find models.</string>
+          </property>
+          <property name="SlicerParameterName" stdset="0">
+           <string>resultsFolder</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="resultsFolderBrowseButton">
+          <property name="geometry">
+           <rect>
+            <x>315</x>
+            <y>190</y>
+            <width>54</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Browse</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="ctkCollapsibleButton" name="outputsCollapsibleButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Output</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Segmentation mask</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="qMRMLNodeComboBox" name="outputSegmentationSelector">
+        <property name="toolTip">
+         <string>Select an existing segmentation node or create a new one.</string>
+        </property>
+        <property name="nodeTypes">
+         <stringlist notr="true">
+          <string>vtkMRMLSegmentationNode</string>
+         </stringlist>
+        </property>
+        <property name="showChildNodeTypes">
+         <bool>false</bool>
+        </property>
+        <property name="noneEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="addEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="removeEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="SlicerParameterName" stdset="0">
+         <string>outputSegmentation</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="applyButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Run segmentation.</string>
+     </property>
+     <property name="text">
+      <string>Segment</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacerBottom">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ctkCollapsibleButton</class>
+   <extends>QWidget</extends>
+   <header>ctkCollapsibleButton.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>qMRMLNodeComboBox</class>
+   <extends>QWidget</extends>
+   <header>qMRMLNodeComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>qMRMLWidget</class>
+   <extends>QWidget</extends>
+   <header>qMRMLWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>SegmentLesionsModule</sender>
+   <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
+   <receiver>inputSelector</receiver>
+   <slot>setMRMLScene(vtkMRMLScene*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>61</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SegmentLesionsModule</sender>
+   <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
+   <receiver>outputSegmentationSelector</receiver>
+   <slot>setMRMLScene(vtkMRMLScene*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>82</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>369</x>
+     <y>520</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>modeComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>stackedModeWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>215</x>
+     <y>194</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>117</x>
+     <y>234</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
