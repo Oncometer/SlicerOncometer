@@ -1,42 +1,45 @@
-# OncometerExtension
+# Oncometer
 
-3D Slicer extension for oncology segmentation and quantification.
+<p align="center">
+  <img src="OncometerExtension.png" width="200">
+</p>
 
-## Main Modules
 
-* **SegmentLesionsModule**: segmentation of tumor lesions on PET/CT volumes.
-* **SegmentOrgansModule**: organ segmentation from CT images.
+Oncometer is a 3D Slicer extension for PET/CT oncology workflows. It provides lesion and organ segmentation, radiomics extraction, and organ-level quantification.
 
-As well as feature extraction from these segmentations:
+## Modules
 
-* **RadiomicsModule**: extraction of radiomic measurements from a PET image and a segmentation mask.
-* **OrganomicsModule**: organ-related quantification tools.
+### SegmentLesionsModule
+
+Segments lesions from PET/CT data using the ENHANCE-PET LION model or a custom nnUNet model of your choice for lesions. The module supports the built-in LION workflow and custom nnU-Net configurations.
+
+### SegmentOrgansModule
+
+Segments organs from CT data using the ENHANCE-PET MOOSE model or a custom nnUNet model of your choice supporting the following labels. The output contains the supported anatomical labels, including liver, kidneys, spleen, heart, lungs, and bones.
+
+### RadiomicsModule
+
+Computes radiomic measurements from a PET volume and a lesion segmentation. Results are written to an MRML table. Available measurements include lesion count, SUV statistics, metabolic volume and surface, distances, shape metrics, and optional PyRadiomics first-order features.
+
+### OrganomicsModule
+
+Computes organ-level measurements from a PET volume and an organ segmentation, and writes the results to an MRML table.
+
 
 ## Installation
 
-1. Copy or clone the `OncometerExtension` folder.
-2. Launch 3D Slicer.
-3. Install the required dependencies below.
-4. In the Extension Wizard in the 3d Slicer modules, choose the folder with "Select Extension"
-5. Reload 3D Slicer.
+Install **OncometerExtension** from the 3D Slicer Extension Manager. The manager resolves the declared `SlicerRadiomics` dependency automatically when that extension is available for the selected Slicer version and platform. Restart Slicer after installation if requested.
 
-### Python Dependencies
+The segmentation packages are installed on first use in Slicer's Python environment:
 
-Some modules use Python packages. To use all modules, install LION and MOOSE in the 3D Slicer Python console by running the following commands:
+* `lionz` for lesion segmentation.
+* `moosez` for organ segmentation.
 
-```python
-slicer.util.pip_install("--upgrade pip")
+The `Dmax` and `TMTS` metrics install `scipy` and `scikit-image` on first use. The `FirstOrder` metric requires `SlicerRadiomics`, which provides PyRadiomics. PyRadiomics is not installed directly with pip because its published packages are not compatible with Slicer's Python 3.12 environment.
 
-slicer.util.pip_install("lionz")
+## nnU-Net Models
 
-slicer.util.pip_install("moosez")
-```
-
-SlicerRadiomics must also be installed from the Extension Manager.
-
-## nnU-Net Segmentation Models
-
-The `SegmentLesionsModule` and `SegmentOrgansModule` include an ENHANCE PET model by default in the code:
+The `SegmentLesionsModule` and `SegmentOrgansModule` use an ENHANCE PET model by default in the code:
 
 * `ENHANCE PET Lion Segmentation` for lesions, with a binary output using label `1`.
 * `ENHANCE-PET Moose Segmentation` for organs, with labels `0-9`. The labels are as follows:
@@ -51,11 +54,12 @@ The `SegmentLesionsModule` and `SegmentOrgansModule` include an ENHANCE PET mode
   * 8: Lungs
   * 9: Bones
 
-Alternatively, nnUNet models can be added from the **"Custom nnUNet"** configuration page.
+Alternatively, nnU-Net models can be added from the **Custom nnU-Net** configuration page.
+
 
 ### Expected Model Weights Directory Structure
 
-The results directory should contain the usual nnU-Net artifacts, with a structure such as:
+The results directory for a custom nnUNet model for segmentation should contain the usual nnU-Net artifacts, with a structure such as:
 
 ```text
 nnUNet_results/
@@ -87,41 +91,124 @@ nnUNet_results/
 
 If your environment does not automatically expose `nnUNet_results`, specify the expected path in the module interface or in the configuration associated with the model.
 
-### Best Practices
+## Workflow
 
-* Make sure that the model was trained for the same image modality as the input data.
-* Test one new model before adding multiple models.
-* Keep large model files outside the Git repository whenever possible.
+The global workflow is:
 
-## Adding a Radiomic Feature or Metric
+1. Load the PET and CT volumes into the Slicer scene.
+2. Segment the lesions with `SegmentLesionsModule`.
+3. Segment the organs with `SegmentOrgansModule`.
+4. Extract lesion radiomics with `RadiomicsModule`.
+5. Extract organ-level measurements with `OrganomicsModule`.
 
-The `RadiomicsModule` computes metrics from a PET image and a lesion segmentation.
+The segmentation modules install `lionz` and `moosez` automatically when they are used for the first time. The `Dmax` and `TMTS` radiomics metrics install `scipy` and `scikit-image` on first use. The `FirstOrder` radiomics metric requires the `SlicerRadiomics` extension, which is normally provided by the Slicer Extension Manager. The workflow will prompt you to restart Slicer if any of these packages are installed.
 
-The metrics are controlled by the UI in `RadiomicsModule/Resources/UI/RadiomicsModule.ui` and by the logic in `RadiomicsModule/RadiomicsModule.py`.
+### 1. Segment Lesions
 
-### Adding a Simple Metric
+Open **SegmentLesionsModule** from the `Quantification.Oncometer` category.
 
-1. Add a new `QCheckBox` to `RadiomicsModule.ui`.
-2. Retrieve it in the `_metricCheckBoxes` list in `RadiomicsModule.py`.
-3. Add it to the `_selectedMetrics()` method using a stable key.
-4. Add a calculation function for this metric in `RadiomicsModuleLogic`.
-5. Implement the calculation in `RadiomicsModuleLogic.process()`.
+1. Select the PET volume as the input volume.
+2. Select the built-in ENHANCE PET Lion model, or open the custom nnU-Net configuration.
+3. Check the model settings and results directory when using a custom model.
+4. Click **Apply**.
+5. Review the output segmentation in the Slicer viewers.
 
-### Adding a PyRadiomics Feature
+The built-in LION workflow produces a binary lesion segmentation. The resulting segmentation node is used as the input for the Radiomics module.
 
-1. Make sure PyRadiomics is installed in Slicer's Python environment.
-2. Enable the desired feature class in `RadiomicsModuleLogic.process()`.
-3. Convert the result to a scalar value before writing it to the output table.
-4. Handle cases where the extractor does not return a numeric value.
+#### Lesion segmentation interface
 
-The module already contains an example using the `FirstOrder` features.
 
-### Points to Keep in Mind
+<p align="center">
+  <img src="Screenshots/Screenshot_SegmentLesions_1.png" width="500">
+</p>
 
-* Non-numeric values must be filtered out before being written to the table.
+#### Lesion segmentation result
 
-## Expected Outputs
+<p align="center">
+  <img src="Screenshots/Screenshot_SegmentLesions_2.png" width="200">
+</p>
 
-* The segmentation modules produce segmentation nodes or labelmaps.
-* The Radiomics module writes its results to an MRML table.
-* The quantification modules may create intermediate outputs in the Slicer scene.
+### 2. Segment Organs
+
+Open **SegmentOrgansModule**.
+
+1. Select the CT volume as the input volume.
+2. Select the ENHANCE PET MOOSE models, or configure a custom nnU-Net model.
+3. Check the model settings and results directory when using a custom model.
+4. Click **Apply**.
+5. Review the labeled organ segmentation in the Slicer viewers.
+
+The organ segmentation supports the following labels:
+
+| Label | Organ |
+| ---: | --- |
+| 1 | Spleen |
+| 2 | Kidneys |
+| 3 | Liver |
+| 4 | Pancreas |
+| 5 | Adrenal glands |
+| 6 | Heart |
+| 7 | Brain |
+| 8 | Lungs |
+| 9 | Bones |
+
+#### Organ segmentation interface
+
+<p align="center">
+  <img src="Screenshots/Screenshot_SegmentOrgans_1.png" width="500">
+</p>
+
+#### Organ segmentation result
+
+<p align="center">
+  <img src="Screenshots/Screenshot_SegmentOrgans_2.png" width="300">
+</p>
+### 3. Extract Lesion Radiomics
+
+Open **RadiomicsModule** after the lesion segmentation is available.
+
+1. Select the PET volume.
+2. Select the lesion segmentation or labelmap.
+3. Select an existing MRML table, or choose **New table**.
+4. Select the metrics to compute.
+5. Click **Apply**.
+
+The module writes one global result row to an MRML table. Available measurements include lesion count, SUV statistics, metabolic tumor volume, tumor surface, distances, shape measurements, and optional PyRadiomics first-order features.
+
+The `FirstOrder` metric requires `SlicerRadiomics`. The `Dmax` and `TMTS` metrics install their Python dependencies automatically on first use. Restart Slicer if requested after a package installation.
+
+#### Radiomics interface
+
+<p align="center">
+  <img src="Screenshots/Screenshot_Radiomics_1.png" width="500">
+</p>
+
+#### Radiomics result
+
+<p align="center">
+  <img src="Screenshots/Screenshot_Radiomics_2.png" width="2500">
+</p>
+
+### 4. Extract Organomics
+
+Open **OrganomicsModule** after the organ segmentation is available.
+
+1. Select the organ segmentation.
+2. Select the PET volume.
+3. Select an existing MRML table, or create a new output table.
+4. Select the organ measurements to compute.
+5. Click **Apply**.
+
+The module computes organ-level measurements from the PET volume and the labeled organ segmentation, then writes the results to an MRML table.
+
+#### Organomics interface
+
+<p align="center">
+  <img src="Screenshots/Screenshot_Organomics_1.png" width="500">
+</p>
+
+#### Organomics result
+
+<p align="center">
+  <img src="Screenshots/Screenshot_Organomics_2.png" width="400">
+</p>
